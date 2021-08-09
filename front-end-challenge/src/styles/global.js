@@ -10,6 +10,12 @@ export default createGlobalStyle`
 
   html, border-style, #root{
     min-height: 100%;
+  
+  }
+
+  body{
+
+    background-color: #fff;
   }
 
   body, input, button{
@@ -20,5 +26,9 @@ export default createGlobalStyle`
 
   button{
     cursor: pointer;
+  }
+
+  li{
+    list-style: none;
   }
 `;
