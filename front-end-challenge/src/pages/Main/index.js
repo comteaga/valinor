@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+
 import {
   FaGithub,
   FaSearch,
@@ -11,8 +11,11 @@ import {
   FaAngleDoubleRight,
 } from 'react-icons/fa';
 import { BiGitRepoForked } from 'react-icons/bi';
+
 import { format, set, toDate } from 'date-fns';
+import { toast } from 'react-toastify';
 import api from '../../services/api';
+
 import {
   Header,
   Container,
@@ -31,7 +34,16 @@ export default function Main() {
   const [loading, setLoading] = useState(false);
   const [numberOfResults, setNumberOfResults] = useState(0);
 
-  const [sort, setSort] = useState('');
+  const [sort, setSort] = useState('match');
+  const [sortOptions, setSortOptions] = useState([
+    { option: 'match', label: 'Melhor match' },
+    { option: 'mostStars', label: 'Mais estrelas' },
+    { option: 'fewestStars', label: 'Menos estrelas' },
+    { option: 'mostForks', label: 'Mais forks' },
+    { option: 'fewestForks', label: 'Menos forks' },
+    { option: 'recentUpdate', label: 'Atualizado recentemente' },
+    { option: 'lastRecentUpdate', label: 'Atualizado a mais tempo' },
+  ]);
 
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState();
@@ -48,7 +60,6 @@ export default function Main() {
           const response = await api.get(`/search/repositories`, {
             params: {
               q: text,
-              sort,
               order: 'desc',
               per_page: 10,
               page: 1,
@@ -56,12 +67,12 @@ export default function Main() {
           });
 
           setNumberOfResults(response.data.total_count);
-
+          setSort('match');
           setResults(response.data.items);
           setPage(1);
           setLoading(false);
         } else {
-          alert('O campo de pesquisa está vazio');
+          toast.error('O campo de pesquisa está vazio');
         }
       }
 
@@ -81,8 +92,8 @@ export default function Main() {
         fewestStars: { sortSelected: 'stars', orderSelected: 'asc' },
         mostForks: { sortSelected: 'forks', orderSelected: 'desc' },
         fewestForks: { sortSelected: 'forks', orderSelected: 'asc' },
-        recentUpdate: { sortSelected: 'update', orderSelected: 'desc' },
-        lastRecentUpdate: { sortSelected: 'update', orderSelected: 'asc' },
+        recentUpdate: { sortSelected: 'updated', orderSelected: 'desc' },
+        lastRecentUpdate: { sortSelected: 'updated', orderSelected: 'asc' },
       };
 
       const { sortSelected } = options[selection];
@@ -185,7 +196,9 @@ export default function Main() {
 
       <Content>
         {newSearch === '' ? (
-          <h1>Inicio</h1>
+          <div>
+            <h1>Inicio</h1>
+          </div>
         ) : (
           <>
             {loading ? (
@@ -201,33 +214,15 @@ export default function Main() {
                   <>
                     <div className="results">
                       <h1>
-                        {numberOfResults
-                          .toString()
-                          .replace(/\B(?=(\d{3})+(?!\d))/g, '.')}{' '}
-                        resultados para: {newSearch}
+                        {numberOfResults.toLocaleString('pt-br')} resultados
+                        para: {newSearch}
                       </h1>
                       <select name="sort" value={sort} onChange={changeSort}>
-                        <option key="1" value="match">
-                          Melhor match
-                        </option>
-                        <option key="2" value="mostStars">
-                          Mais strelas
-                        </option>
-                        <option key="3" value="fewestStars">
-                          Menos strelas
-                        </option>
-                        <option key="4" value="mostForks">
-                          Mais forks
-                        </option>
-                        <option key="5" value="fewestForks">
-                          Menos forks
-                        </option>
-                        <option key="6" value="recentUpdate">
-                          Atualizado recentemente
-                        </option>
-                        <option key="7" value="lastRecentUpdate">
-                          Atualizado a mais tempo
-                        </option>
+                        {sortOptions.map((item) => (
+                          <option key={item.option} value={item.option}>
+                            {item.label}
+                          </option>
+                        ))}
                       </select>
                     </div>
 
@@ -246,16 +241,22 @@ export default function Main() {
                             >
                               {' '}
                               <FaRegStar size={14} color="#596069" />{' '}
-                              {repo.watchers}
+                              {repo.watchers.toLocaleString('en', {
+                                notation: 'compact',
+                              })}
                             </a>
                             <p>
                               {' '}
                               <BiGitRepoForked size={14} color="#596069" />{' '}
-                              {repo.forks}
+                              {repo.forks.toLocaleString('en', {
+                                notation: 'compact',
+                              })}
                             </p>
                             <p>{repo.language}</p>
                             <p>
-                              {repo.license !== null ? repo.license.name : '-'}
+                              {repo.license !== null
+                                ? repo.license.spdx_id
+                                : '-'}
                             </p>
                             <p>
                               Criado em{' '}
@@ -295,13 +296,14 @@ export default function Main() {
                       {pagingControl.map((item) =>
                         item === page ? (
                           <button
+                            key={item}
                             className="pageButtonSelected"
                             onClick={() => changePage(item)}
                           >
                             {item}
                           </button>
                         ) : (
-                          <button onClick={() => changePage(item)}>
+                          <button key={item} onClick={() => changePage(item)}>
                             {item}
                           </button>
                         ),
