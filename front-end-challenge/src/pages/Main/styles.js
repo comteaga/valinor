@@ -1,6 +1,7 @@
 import styled, { keyframes } from 'styled-components';
 
 export const Container = styled.div`
+  background-color: #fff;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -8,12 +9,16 @@ export const Container = styled.div`
 `;
 
 export const Header = styled.header`
+  position: fixed;
+  left: 0;
+  top: 0;
   background-color: #25292e;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 10px;
   width: 100%;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 
   h1 {
     color: #eee;
@@ -26,7 +31,6 @@ export const Header = styled.header`
     display: flex;
     align-items: center;
     justify-content: center;
-    text-decoration: none;
   }
 
   input {
@@ -57,6 +61,33 @@ export const Header = styled.header`
 
     width: 400px;
   }
+
+  @media screen and (max-width: 700px) {
+    flex-direction: column;
+    margin-bottom: 80px;
+
+    .logo {
+      margin-bottom: 15px;
+
+      h1 {
+        font-size: 36px;
+      }
+
+      svg {
+        height: 40px;
+        width: 40px;
+      }
+    }
+
+    .searchBox {
+      width: 100%;
+      padding: 8px;
+    }
+
+    input {
+      font-size: 22px;
+    }
+  }
 `;
 
 export const Content = styled.div`
@@ -64,10 +95,12 @@ export const Content = styled.div`
   background-color: #fff;
   display: column;
   align-items: center;
+  text-align: center;
   justify-content: center;
   color: #222;
   width: 80%;
-  padding: 20px;
+  height: 100%;
+  padding: 80px 20px 0px 20px;
   margin: auto;
 
   h1 {
@@ -85,18 +118,30 @@ export const Content = styled.div`
       background-color: #eee;
       border-color: #ddd;
     }
+
+    option {
+      border: none;
+      background-color: #eee;
+      color: #25292e;
+    }
+  }
+
+  @media screen and (max-width: 700px) {
+    margin-top: 70px;
+    width: 100%;
   }
 `;
 
 export const RepoArea = styled.div`
   background-color: #eee;
   color: #222;
-  margin: 10px 0;
+  margin: 15px 0;
   border-radius: 10px;
   padding: 20px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 
   img {
     max-height: 100px;
@@ -112,6 +157,7 @@ export const RepoArea = styled.div`
 
   .info {
     margin-left: 20px;
+    text-align: left;
   }
 
   .name {
@@ -124,8 +170,6 @@ export const RepoArea = styled.div`
   .name:hover {
     text-decoration: underline;
   }
-
-  /* implementar  responsividade */
 
   .details {
     display: flex;
@@ -145,6 +189,28 @@ export const RepoArea = styled.div`
 
   .stars:hover {
     color: #2b61d5;
+  }
+
+  @media screen and (max-width: 700px) {
+    flex-direction: column;
+
+    .details {
+      text-align: left;
+      display: flex;
+      justify-content: left;
+      align-items: flex-start;
+      flex-direction: column;
+      margin: 0;
+      font-size: 22px;
+    }
+
+    p {
+      font-size: 22px;
+    }
+
+    img {
+      margin-bottom: 15px;
+    }
   }
 `;
 
@@ -181,7 +247,9 @@ export const NoResults = styled.div`
 `;
 
 export const Footer = styled.footer`
-  border: 1px solid #eee;
+  border: 1px solid #ddd;
+  position: relative;
+  bottom: 0;
   color: #596069;
   display: flex;
   justify-content: center;
@@ -194,7 +262,7 @@ export const PagingArea = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  margin: 20px 0;
 
   button {
     padding: 10px;
@@ -209,6 +277,13 @@ export const PagingArea = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+
+    @media screen and (max-width: 700px) {
+      font-size: 22px;
+      span {
+        font-size: 0;
+      }
+    }
 
     svg {
       margin: 0 3px;
@@ -232,5 +307,31 @@ export const PagingArea = styled.div`
     padding: 10px 15px;
     font-weight: bold;
     border-radius: 4px;
+  }
+`;
+
+export const Initial = styled.div`
+  background-color: #eee;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  margin: auto;
+  padding: 50px;
+  width: 80%;
+  min-height: 70vh;
+
+  h1 {
+    font-size: 36px;
+    margin-bottom: 30px;
+  }
+
+  h2 {
+    margin: 15px 0;
+  }
+
+  svg {
+    margin-right: 10px;
   }
 `;

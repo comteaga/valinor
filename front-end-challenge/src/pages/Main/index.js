@@ -25,6 +25,7 @@ import {
   Footer,
   Content,
   PagingArea,
+  Initial,
 } from './styles';
 
 export default function Main() {
@@ -196,9 +197,10 @@ export default function Main() {
 
       <Content>
         {newSearch === '' ? (
-          <div>
-            <h1>Inicio</h1>
-          </div>
+          <Initial>
+            <h1>Pesquise repositórios no Github</h1>
+            <FaGithub size={200} />
+          </Initial>
         ) : (
           <>
             {loading ? (
@@ -280,7 +282,7 @@ export default function Main() {
                         }}
                       >
                         <FaAngleDoubleLeft />
-                        Primeira página
+                        <span>Primeira página</span>
                       </button>
                       <button
                         type="button"
@@ -290,7 +292,7 @@ export default function Main() {
                         }}
                       >
                         <FaChevronLeft />
-                        Anterior
+                        <span>Anterior</span>
                       </button>
 
                       {pagingControl.map((item) =>
@@ -316,7 +318,7 @@ export default function Main() {
                           changePage(page + 1);
                         }}
                       >
-                        Próxima
+                        <span>Próxima</span>
                         <FaChevronRight />
                       </button>
                       <button
@@ -326,7 +328,7 @@ export default function Main() {
                           changePage(lastPage);
                         }}
                       >
-                        Última página
+                        <span>Última página</span>
                         <FaAngleDoubleRight />
                       </button>
                     </PagingArea>
