@@ -10,11 +10,16 @@ import {
   FaAngleDoubleLeft,
   FaAngleDoubleRight,
 } from 'react-icons/fa';
+
 import { BiGitRepoForked } from 'react-icons/bi';
 
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
-import api from '../../services/api';
+
+import {
+  GithubSearchItemsResponse,
+  searchRepositories,
+} from '../../services/api-service';
 
 import {
   Header,
@@ -29,8 +34,8 @@ import {
 } from './styles';
 
 interface SortType {
-  sortSelected: '' | 'stars' | 'forks' | 'updated';
-  orderSelected: 'desc' | 'asc';
+  sort: '' | 'stars' | 'forks' | 'updated';
+  order: 'desc' | 'asc';
 }
 
 interface SortableAttributes {
@@ -44,41 +49,15 @@ interface SortableAttributes {
   lastRecentUpdate: SortType;
 }
 
-interface GithubSearchItemsResponse {
-  id: number;
-  name: string;
-  full_name: string;
-  description: string;
-  fork: string;
-  url: string;
-  html_url: string;
-  created_at: string;
-  updated_at: string;
-  watchers_count: number;
-  language: string;
-  forks: number;
-  open_issues: number;
-  watchers: number;
-  license: {
-    spdx_id: string;
-  };
-  owner: {
-    avatar_url: string;
-  };
-}
-
-interface GithubSearchResponse {
-  total_count: number;
-  items: GithubSearchItemsResponse[];
-}
-
 export default function Main() {
   const [text, setText] = useState<string>('');
   const [newSearch, setNewSearch] = useState<string>('');
   const [results, setResults] = useState<GithubSearchItemsResponse[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [numberOfResults, setNumberOfResults] = useState<number>(0);
-  const [sort, setSort] = useState<string>('match');
+  const [sortValue, setSortValue] = useState<string>('match');
+  const [sort, setSort] = useState<string>('');
+  const [order, setOrder] = useState<string>('desc');
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState<number>(1);
   const [pagingControl, setPagingControl] = useState<number[]>([]);
@@ -93,16 +72,6 @@ export default function Main() {
     { option: 'lastRecentUpdate', label: 'Atualizado a mais tempo' },
   ];
 
-  const options: SortableAttributes = {
-    match: { sortSelected: '', orderSelected: 'desc' },
-    mostStars: { sortSelected: 'stars', orderSelected: 'desc' },
-    fewestStars: { sortSelected: 'stars', orderSelected: 'asc' },
-    mostForks: { sortSelected: 'forks', orderSelected: 'desc' },
-    fewestForks: { sortSelected: 'forks', orderSelected: 'asc' },
-    recentUpdate: { sortSelected: 'updated', orderSelected: 'desc' },
-    lastRecentUpdate: { sortSelected: 'updated', orderSelected: 'asc' },
-  };
-
   const searchRepo = useCallback(
     (e) => {
       e.preventDefault();
@@ -111,20 +80,16 @@ export default function Main() {
         if (text.trim() !== '') {
           setNewSearch(text);
           setLoading(true);
-          const response = await api.get(`/search/repositories`, {
-            params: {
-              q: text,
-              order: 'desc',
-              per_page: 10,
-              page: 1,
-            },
-          });
+          try {
+            const response = await searchRepositories({ q: text });
 
-          setNumberOfResults(response.data.total_count);
-          setSort('match');
-          setResults(response.data.items);
-          setPage(1);
-          setLoading(false);
+            setNumberOfResults(response.data.total_count);
+            setSortValue('match');
+            setResults(response.data.items);
+            setPage(1);
+          } finally {
+            setLoading(false);
+          }
         } else {
           toast.error('O campo de pesquisa está vazio');
         }
@@ -138,28 +103,40 @@ export default function Main() {
   const changeSort = useCallback(
     (e) => {
       const selection: string = e.target.value;
-      setSort(selection);
+      setSortValue(selection);
 
-      const { sortSelected } = options[selection];
-      const { orderSelected } = options[selection];
+      const options: SortableAttributes = {
+        match: { sort: '', order: 'desc' },
+        mostStars: { sort: 'stars', order: 'desc' },
+        fewestStars: { sort: 'stars', order: 'asc' },
+        mostForks: { sort: 'forks', order: 'desc' },
+        fewestForks: { sort: 'forks', order: 'asc' },
+        recentUpdate: { sort: 'updated', order: 'desc' },
+        lastRecentUpdate: { sort: 'updated', order: 'asc' },
+      };
+
+      const { sort } = options[selection];
+      const { order } = options[selection];
 
       async function change() {
         setLoading(true);
-        const response = await api.get(`/search/repositories`, {
-          params: {
+        try {
+          const response = await searchRepositories({
             q: newSearch,
-            sort: sortSelected,
-            order: orderSelected,
-            per_page: 10,
-            page: 1,
-          },
-        });
-        setResults(response.data.items);
-        setPage(1);
-        setLoading(false);
+            sort,
+            order,
+          });
+          setResults(response.data.items);
+          setPage(1);
+        } finally {
+          setLoading(false);
+        }
       }
 
       change();
+
+      setSort(sort);
+      setOrder(order);
     },
     [newSearch],
   );
@@ -196,29 +173,25 @@ export default function Main() {
 
   const changePage = useCallback(
     (item: number) => {
-      const { sortSelected } = options[sort];
-      const { orderSelected } = options[sort];
-
       async function goToPage(toPage: number) {
         setLoading(true);
-        const response = await api.get(`/search/repositories`, {
-          params: {
+        try {
+          const response = await searchRepositories({
             q: newSearch,
-            sort: sortSelected,
-            order: orderSelected,
-            per_page: 10,
+            sort,
+            order,
             page: +toPage,
-          },
-        });
-
-        setResults(response.data.items);
-        setLoading(false);
+          });
+          setResults(response.data.items);
+          setPage(item);
+        } finally {
+          setLoading(false);
+        }
       }
 
       goToPage(item);
-      setPage(item);
     },
-    [newSearch, sort],
+    [newSearch, sortValue, sort, order],
   );
 
   return (
@@ -263,9 +236,13 @@ export default function Main() {
                     <div className="results">
                       <h1>
                         {numberOfResults.toLocaleString('pt-br')} resultados
-                        para: {newSearch} Sort: {sort}
+                        para: {newSearch}
                       </h1>
-                      <select name="sort" value={sort} onChange={changeSort}>
+                      <select
+                        name="sort"
+                        value={sortValue}
+                        onChange={changeSort}
+                      >
                         {sortOptions.map((item) => (
                           <option key={item.option} value={item.option}>
                             {item.label}

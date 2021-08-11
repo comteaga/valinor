@@ -3,7 +3,7 @@
     "browser": true,
     "es2021": true
   },
-  "parser": "babel-eslint, @typescript-eslint/parser",
+  "parser": "@typescript-eslint/parser",
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
