@@ -12,7 +12,7 @@ import {
 } from 'react-icons/fa';
 import { BiGitRepoForked } from 'react-icons/bi';
 
-import { format, set, toDate } from 'date-fns';
+import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import api from '../../services/api';
 
@@ -28,15 +28,62 @@ import {
   Initial,
 } from './styles';
 
-export default function Main() {
-  const [text, setText] = useState('');
-  const [newSearch, setNewSearch] = useState('');
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [numberOfResults, setNumberOfResults] = useState(0);
+interface SortType {
+  sortSelected: '' | 'stars' | 'forks' | 'updated';
+  orderSelected: 'desc' | 'asc';
+}
 
-  const [sort, setSort] = useState('match');
-  const [sortOptions, setSortOptions] = useState([
+interface SortableAttributes {
+  [name: string]: SortType;
+  match: SortType;
+  mostStars: SortType;
+  fewestStars: SortType;
+  mostForks: SortType;
+  fewestForks: SortType;
+  recentUpdate: SortType;
+  lastRecentUpdate: SortType;
+}
+
+interface GithubSearchItemsResponse {
+  id: number;
+  name: string;
+  full_name: string;
+  description: string;
+  fork: string;
+  url: string;
+  html_url: string;
+  created_at: string;
+  updated_at: string;
+  watchers_count: number;
+  language: string;
+  forks: number;
+  open_issues: number;
+  watchers: number;
+  license: {
+    spdx_id: string;
+  };
+  owner: {
+    avatar_url: string;
+  };
+}
+
+interface GithubSearchResponse {
+  total_count: number;
+  items: GithubSearchItemsResponse[];
+}
+
+export default function Main() {
+  const [text, setText] = useState<string>('');
+  const [newSearch, setNewSearch] = useState<string>('');
+  const [results, setResults] = useState<GithubSearchItemsResponse[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [numberOfResults, setNumberOfResults] = useState<number>(0);
+  const [sort, setSort] = useState<string>('match');
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState<number>(1);
+  const [pagingControl, setPagingControl] = useState<number[]>([]);
+
+  const sortOptions = [
     { option: 'match', label: 'Melhor match' },
     { option: 'mostStars', label: 'Mais estrelas' },
     { option: 'fewestStars', label: 'Menos estrelas' },
@@ -44,11 +91,17 @@ export default function Main() {
     { option: 'fewestForks', label: 'Menos forks' },
     { option: 'recentUpdate', label: 'Atualizado recentemente' },
     { option: 'lastRecentUpdate', label: 'Atualizado a mais tempo' },
-  ]);
+  ];
 
-  const [page, setPage] = useState(1);
-  const [lastPage, setLastPage] = useState();
-  const [pagingControl, setPagingControl] = useState([]);
+  const options: SortableAttributes = {
+    match: { sortSelected: '', orderSelected: 'desc' },
+    mostStars: { sortSelected: 'stars', orderSelected: 'desc' },
+    fewestStars: { sortSelected: 'stars', orderSelected: 'asc' },
+    mostForks: { sortSelected: 'forks', orderSelected: 'desc' },
+    fewestForks: { sortSelected: 'forks', orderSelected: 'asc' },
+    recentUpdate: { sortSelected: 'updated', orderSelected: 'desc' },
+    lastRecentUpdate: { sortSelected: 'updated', orderSelected: 'asc' },
+  };
 
   const searchRepo = useCallback(
     (e) => {
@@ -79,23 +132,13 @@ export default function Main() {
 
       search();
     },
-    [results, text],
+    [text],
   );
 
   const changeSort = useCallback(
     (e) => {
-      const selection = e.target.value;
+      const selection: string = e.target.value;
       setSort(selection);
-
-      const options = {
-        match: { sortSelected: '', orderSelected: 'desc' },
-        mostStars: { sortSelected: 'stars', orderSelected: 'desc' },
-        fewestStars: { sortSelected: 'stars', orderSelected: 'asc' },
-        mostForks: { sortSelected: 'forks', orderSelected: 'desc' },
-        fewestForks: { sortSelected: 'forks', orderSelected: 'asc' },
-        recentUpdate: { sortSelected: 'updated', orderSelected: 'desc' },
-        lastRecentUpdate: { sortSelected: 'updated', orderSelected: 'asc' },
-      };
 
       const { sortSelected } = options[selection];
       const { orderSelected } = options[selection];
@@ -118,7 +161,7 @@ export default function Main() {
 
       change();
     },
-    [newSearch, sort],
+    [newSearch],
   );
 
   useEffect(() => {
@@ -152,14 +195,17 @@ export default function Main() {
   }, [page, numberOfResults]);
 
   const changePage = useCallback(
-    (item) => {
-      async function goToPage(toPage) {
+    (item: number) => {
+      const { sortSelected } = options[sort];
+      const { orderSelected } = options[sort];
+
+      async function goToPage(toPage: number) {
         setLoading(true);
         const response = await api.get(`/search/repositories`, {
           params: {
             q: newSearch,
-            sort,
-            order: 'desc',
+            sort: sortSelected,
+            order: orderSelected,
             per_page: 10,
             page: +toPage,
           },
@@ -172,7 +218,7 @@ export default function Main() {
       goToPage(item);
       setPage(item);
     },
-    [page, numberOfResults, newSearch, results, sort, lastPage, pagingControl],
+    [newSearch, sort],
   );
 
   return (
@@ -217,7 +263,7 @@ export default function Main() {
                     <div className="results">
                       <h1>
                         {numberOfResults.toLocaleString('pt-br')} resultados
-                        para: {newSearch}
+                        para: {newSearch} Sort: {sort}
                       </h1>
                       <select name="sort" value={sort} onChange={changeSort}>
                         {sortOptions.map((item) => (

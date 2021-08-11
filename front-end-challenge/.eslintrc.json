@@ -3,13 +3,16 @@
     "browser": true,
     "es2021": true
   },
-  "parser": "babel-eslint",
+  "parser": "babel-eslint, @typescript-eslint/parser",
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
     "airbnb",
     "prettier",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript"
   ],
   "parserOptions": {
     "ecmaFeatures": {
@@ -18,7 +21,7 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": ["react", "prettier"],
+  "plugins": ["react", "@typescript-eslint", "prettier"],
   "rules": {
     "prettier/prettier": "error",
     "react/jsx-uses-vars": "error",
@@ -30,7 +33,7 @@
     "react/jsx-filename-extension": [
       1,
       {
-        "extensions": [".js", ".jsx"]
+        "extensions": [".ts", ".tsx"]
       }
     ], //should add ".ts" if typescript project
     "react/prop-types": 0,
@@ -42,5 +45,14 @@
     "import/prefer-default-export": 0,
     "no-plusplus": 0,
     "dot-notation": 0
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "typescript": {},
+        "paths": ["src"],
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
   }
 }
