@@ -1,19 +1,4 @@
 import { useEffect, useState, useCallback } from 'react';
-
-import {
-  FaGithub,
-  FaSearch,
-  FaSpinner,
-  FaRegStar,
-  FaChevronRight,
-  FaChevronLeft,
-  FaAngleDoubleLeft,
-  FaAngleDoubleRight,
-} from 'react-icons/fa';
-
-import { BiGitRepoForked } from 'react-icons/bi';
-
-import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 
 import {
@@ -21,17 +6,16 @@ import {
   searchRepositories,
 } from '../../services/api-service';
 
-import {
-  Header,
-  Container,
-  RepoArea,
-  Loading,
-  NoResults,
-  Footer,
-  Content,
-  PagingArea,
-  Initial,
-} from './styles';
+import { Container, Content } from './styles';
+
+import { Header } from '../../components/Header';
+import { Initial } from '../../components/Initial';
+import { Loading } from '../../components/Loading';
+import { NoResults } from '../../components/NoResults';
+import { DescriptionOfResults } from '../../components/DescriptionOfResults';
+import { RepoArea } from '../../components/RepoArea';
+import { PagingArea } from '../../components/PagingArea';
+import { Footer } from '../../components/Footer';
 
 interface SortType {
   sort: '' | 'stars' | 'forks' | 'updated';
@@ -49,28 +33,28 @@ interface SortableAttributes {
   lastRecentUpdate: SortType;
 }
 
-export default function Main() {
+const Main: React.FC = () => {
   const [text, setText] = useState<string>('');
   const [newSearch, setNewSearch] = useState<string>('');
   const [results, setResults] = useState<GithubSearchItemsResponse[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [numberOfResults, setNumberOfResults] = useState<number>(0);
   const [sortValue, setSortValue] = useState<string>('match');
-  const [sort, setSort] = useState<string>('');
-  const [order, setOrder] = useState<string>('desc');
-  const [page, setPage] = useState(1);
+  const [sortSelected, setSortSelected] = useState<string>('');
+  const [orderSelected, setOrderSelected] = useState<string>('desc');
+  const [page, setPage] = useState<number>(1);
   const [lastPage, setLastPage] = useState<number>(1);
   const [pagingControl, setPagingControl] = useState<number[]>([]);
+  const [toggleSearch, setToggleSearch] = useState<boolean>(false);
 
-  const sortOptions = [
-    { option: 'match', label: 'Melhor match' },
-    { option: 'mostStars', label: 'Mais estrelas' },
-    { option: 'fewestStars', label: 'Menos estrelas' },
-    { option: 'mostForks', label: 'Mais forks' },
-    { option: 'fewestForks', label: 'Menos forks' },
-    { option: 'recentUpdate', label: 'Atualizado recentemente' },
-    { option: 'lastRecentUpdate', label: 'Atualizado a mais tempo' },
-  ];
+  useEffect(() => {
+    if (toggleSearch) {
+      document.body.style.overflow = 'hidden';
+    }
+    if (!toggleSearch) {
+      document.body.style.overflow = 'visible';
+    }
+  }, [toggleSearch]);
 
   const searchRepo = useCallback(
     (e) => {
@@ -91,6 +75,12 @@ export default function Main() {
             setLoading(false);
           }
         } else {
+          setNewSearch('');
+          setNumberOfResults(0);
+          setSortValue('match');
+          setResults([]);
+          setPage(1);
+          setLoading(false);
           toast.error('O campo de pesquisa está vazio');
         }
       }
@@ -101,10 +91,7 @@ export default function Main() {
   );
 
   const changeSort = useCallback(
-    (e) => {
-      const selection: string = e.target.value;
-      setSortValue(selection);
-
+    (value: string) => {
       const options: SortableAttributes = {
         match: { sort: '', order: 'desc' },
         mostStars: { sort: 'stars', order: 'desc' },
@@ -115,8 +102,8 @@ export default function Main() {
         lastRecentUpdate: { sort: 'updated', order: 'asc' },
       };
 
-      const { sort } = options[selection];
-      const { order } = options[selection];
+      const { sort } = options[value];
+      const { order } = options[value];
 
       async function change() {
         setLoading(true);
@@ -135,8 +122,9 @@ export default function Main() {
 
       change();
 
-      setSort(sort);
-      setOrder(order);
+      setSortValue(value);
+      setSortSelected(sort);
+      setOrderSelected(order);
     },
     [newSearch],
   );
@@ -178,8 +166,8 @@ export default function Main() {
         try {
           const response = await searchRepositories({
             q: newSearch,
-            sort,
-            order,
+            sort: sortSelected,
+            order: orderSelected,
             page: +toPage,
           });
           setResults(response.data.items);
@@ -188,173 +176,48 @@ export default function Main() {
           setLoading(false);
         }
       }
-
       goToPage(item);
     },
-    [newSearch, sortValue, sort, order],
+    [newSearch, sortSelected, orderSelected],
   );
 
   return (
     <Container>
-      <Header>
-        <div className="logo">
-          <FaGithub size={30} color="#fff" />
-          <h1>Repositórios</h1>
-        </div>
-        <form className="searchBox" onSubmit={searchRepo}>
-          <input
-            type="text"
-            placeholder="Buscar repositórios"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-          />
-          <button type="submit">
-            <FaSearch size={14} color="#ddd" />
-          </button>
-        </form>
-      </Header>
+      <Header
+        text={text}
+        searchRepo={searchRepo}
+        setText={setText}
+        toggleSearch={toggleSearch}
+        setToggleSearch={setToggleSearch}
+      />
 
       <Content>
         {newSearch === '' ? (
-          <Initial>
-            <h1>Pesquise repositórios no Github</h1>
-            <FaGithub size={200} />
-          </Initial>
+          <Initial />
         ) : (
           <>
             {loading ? (
-              <Loading>
-                <FaSpinner size={30} color="#222" />
-                <h1>Carregando...</h1>
-              </Loading>
+              <Loading />
             ) : (
               <>
                 {results.length <= 0 ? (
-                  <NoResults>Nenhum resultado encontrado!</NoResults>
+                  <NoResults />
                 ) : (
                   <>
-                    <div className="results">
-                      <h1>
-                        {numberOfResults.toLocaleString('pt-br')} resultados
-                        para: {newSearch}
-                      </h1>
-                      <select
-                        name="sort"
-                        value={sortValue}
-                        onChange={changeSort}
-                      >
-                        {sortOptions.map((item) => (
-                          <option key={item.option} value={item.option}>
-                            {item.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <DescriptionOfResults
+                      numberOfResults={numberOfResults}
+                      newSearch={newSearch}
+                      sortValue={sortValue}
+                      changeSort={changeSort}
+                    />
+                    <RepoArea results={results} />
 
-                    {results.map((repo) => (
-                      <RepoArea key={String(repo.id)}>
-                        <img src={repo.owner.avatar_url} alt={repo.name} />
-                        <div className="info">
-                          <a className="name" href={repo.html_url}>
-                            {repo.full_name}
-                          </a>
-                          <p>{repo.description}</p>
-                          <div className="details">
-                            <a
-                              className="stars"
-                              href={`${repo.html_url}/stargazers`}
-                            >
-                              {' '}
-                              <FaRegStar size={14} color="#596069" />{' '}
-                              {repo.watchers.toLocaleString('en', {
-                                notation: 'compact',
-                              })}
-                            </a>
-                            <p>
-                              {' '}
-                              <BiGitRepoForked size={14} color="#596069" />{' '}
-                              {repo.forks.toLocaleString('en', {
-                                notation: 'compact',
-                              })}
-                            </p>
-                            <p>{repo.language}</p>
-                            <p>
-                              {repo.license !== null
-                                ? repo.license.spdx_id
-                                : '-'}
-                            </p>
-                            <p>
-                              Criado em{' '}
-                              {format(new Date(repo.created_at), 'dd/MM/yy')}
-                            </p>
-                            <p>
-                              Atualizado em{' '}
-                              {format(new Date(repo.updated_at), 'dd/MM/yy')}
-                            </p>
-                            <p>{repo.open_issues} issues abertas</p>
-                          </div>
-                        </div>
-                      </RepoArea>
-                    ))}
-                    <PagingArea>
-                      <button
-                        type="button"
-                        disabled={page === 1}
-                        onClick={() => {
-                          changePage(1);
-                        }}
-                      >
-                        <FaAngleDoubleLeft />
-                        <span>Primeira página</span>
-                      </button>
-                      <button
-                        type="button"
-                        disabled={page < 2}
-                        onClick={() => {
-                          changePage(page - 1);
-                        }}
-                      >
-                        <FaChevronLeft />
-                        <span>Anterior</span>
-                      </button>
-
-                      {pagingControl.map((item) =>
-                        item === page ? (
-                          <button
-                            key={item}
-                            className="pageButtonSelected"
-                            onClick={() => changePage(item)}
-                          >
-                            {item}
-                          </button>
-                        ) : (
-                          <button key={item} onClick={() => changePage(item)}>
-                            {item}
-                          </button>
-                        ),
-                      )}
-
-                      <button
-                        type="button"
-                        disabled={page === lastPage}
-                        onClick={() => {
-                          changePage(page + 1);
-                        }}
-                      >
-                        <span>Próxima</span>
-                        <FaChevronRight />
-                      </button>
-                      <button
-                        type="button"
-                        disabled={page === lastPage}
-                        onClick={() => {
-                          changePage(lastPage);
-                        }}
-                      >
-                        <span>Última página</span>
-                        <FaAngleDoubleRight />
-                      </button>
-                    </PagingArea>
+                    <PagingArea
+                      changePage={changePage}
+                      page={page}
+                      pagingControl={pagingControl}
+                      lastPage={lastPage}
+                    />
                   </>
                 )}
               </>
@@ -362,9 +225,9 @@ export default function Main() {
           </>
         )}
       </Content>
-      <Footer>
-        <p>Desenvolvido por Matheus Pansani Pedroso - 2021</p>
-      </Footer>
+      {!toggleSearch && <Footer />}
     </Container>
   );
-}
+};
+
+export { Main };

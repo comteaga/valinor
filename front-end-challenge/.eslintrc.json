@@ -23,7 +23,17 @@
   },
   "plugins": ["react", "@typescript-eslint", "prettier"],
   "rules": {
-    "prettier/prettier": "error",
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
+    "prettier/prettier": 1,
     "react/jsx-uses-vars": "error",
     "react/jsx-uses-react": "error",
     "no-unused-vars": 0,
