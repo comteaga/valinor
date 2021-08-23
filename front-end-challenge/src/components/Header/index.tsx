@@ -1,29 +1,65 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useContext, useCallback } from 'react';
 import { FaArrowLeft, FaGithub, FaSearch } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 import { Container } from './styles';
+import AppContext from '../../contexts/appContext';
+import { searchRepositories } from '../../services/api-service';
 
-interface IProps {
-  text?: string;
-  searchRepo?(e: React.FormEvent<HTMLFormElement>): void;
-  setText?(text: string): void;
-  toggleSearch: boolean;
-  setToggleSearch(active: boolean): void;
-}
+const Header: React.FC = () => {
+  const {
+    toggleSearch,
+    setNewSearch,
+    setLoading,
+    setNumberOfResults,
+    setResults,
+    setSortValue,
+    setPage,
+    setFilterValue,
+    setToggleSearch,
+  } = useContext(AppContext);
 
-const Header: React.FC<IProps> = ({
-  text,
-  searchRepo,
-  setText,
-  toggleSearch,
-  setToggleSearch,
-}) => {
   const inputRef = useRef<null | HTMLElement>(null);
+
+  const [text, setText] = useState<string>('');
 
   useEffect(() => {
     if (toggleSearch && inputRef.current) {
       inputRef.current.focus();
     }
   }, [toggleSearch]);
+
+  const searchRepo = useCallback(
+    (e) => {
+      e.preventDefault();
+
+      async function search() {
+        if (text.trim() !== '') {
+          setNewSearch(text);
+          setLoading(true);
+          try {
+            const response = await searchRepositories({ q: text });
+
+            setNumberOfResults(response.data.total_count);
+            setResults(response.data.items);
+          } finally {
+            setLoading(false);
+          }
+        } else {
+          setNewSearch('');
+          setNumberOfResults(0);
+          setResults([]);
+          setLoading(false);
+          toast.error('O campo de pesquisa está vazio');
+        }
+      }
+
+      search();
+      setSortValue('match');
+      setPage(1);
+      setFilterValue('');
+    },
+    [text],
+  );
 
   return (
     <Container>

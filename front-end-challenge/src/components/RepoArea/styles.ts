@@ -12,8 +12,7 @@ const Container = styled.div`
   transition: transform 0.3s;
 
   :hover {
-    transform: scale(1.01);
-    transform: translateX(10px);
+    transform: scale(1.01) translateX(10px);
     box-shadow: 4px 4px 12px 0 rgba(0, 0, 0, 0.3);
   }
 
@@ -143,7 +142,7 @@ const Container = styled.div`
       display: flex;
       flex-direction: column;
       justify-content: center;
-      align-items: stretch;
+      align-items: center;
       margin: 0;
       width: 100%;
     }
@@ -152,6 +151,7 @@ const Container = styled.div`
       text-align: center;
     }
     .details {
+      width: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;

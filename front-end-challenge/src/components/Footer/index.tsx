@@ -1,7 +1,7 @@
 import { IoMailOutline } from 'react-icons/io5';
 import { Container } from './styles';
 
-const Footer = () => {
+const Footer: React.FC = () => {
   return (
     <Container>
       <p>Desenvolvido por Matheus Pansani Pedroso - 2021</p>

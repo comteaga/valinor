@@ -11,7 +11,7 @@ const Container = styled.div`
   margin-bottom: 5vh;
   padding: 50px;
   width: 80%;
-  min-height: 70vh;
+  min-height: 60vh;
 
   h1 {
     font-size: 36px;

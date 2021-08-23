@@ -1,10 +1,5 @@
-import { useEffect, useState, useCallback } from 'react';
-import { toast } from 'react-toastify';
-
-import {
-  IGithubSearchItemsResponse,
-  searchRepositories,
-} from '../../services/api-service';
+import { useEffect, useContext } from 'react';
+import AppContext from '../../contexts/appContext';
 
 import { Container, Content } from './styles';
 
@@ -17,36 +12,8 @@ import { RepoArea } from '../../components/RepoArea';
 import { PagingArea } from '../../components/PagingArea';
 import { Footer } from '../../components/Footer';
 
-interface ISortType {
-  sort: '' | 'stars' | 'forks' | 'updated';
-  order: 'desc' | 'asc';
-}
-
-interface ISortableAttributes {
-  [name: string]: ISortType;
-  match: ISortType;
-  mostStars: ISortType;
-  fewestStars: ISortType;
-  mostForks: ISortType;
-  fewestForks: ISortType;
-  recentUpdate: ISortType;
-  lastRecentUpdate: ISortType;
-}
-
 const Main: React.FC = () => {
-  const [text, setText] = useState<string>('');
-  const [newSearch, setNewSearch] = useState<string>('');
-  const [results, setResults] = useState<IGithubSearchItemsResponse[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [numberOfResults, setNumberOfResults] = useState<number>(0);
-  const [sortValue, setSortValue] = useState<string>('match');
-  const [sortSelected, setSortSelected] = useState<string>('');
-  const [orderSelected, setOrderSelected] = useState<string>('desc');
-  const [page, setPage] = useState<number>(1);
-  const [lastPage, setLastPage] = useState<number>(1);
-  const [pagingControl, setPagingControl] = useState<number[]>([]);
-  const [toggleSearch, setToggleSearch] = useState<boolean>(false);
-  const [filterValue, setFilterValue] = useState<string>('');
+  const { toggleSearch, newSearch, loading, results } = useContext(AppContext);
 
   useEffect(() => {
     if (toggleSearch) {
@@ -57,163 +24,9 @@ const Main: React.FC = () => {
     }
   }, [toggleSearch]);
 
-  const searchRepo = useCallback(
-    (e) => {
-      e.preventDefault();
-
-      async function search() {
-        if (text.trim() !== '') {
-          setNewSearch(text);
-          setLoading(true);
-          try {
-            const response = await searchRepositories({ q: text });
-
-            setNumberOfResults(response.data.total_count);
-            setResults(response.data.items);
-          } finally {
-            setLoading(false);
-          }
-        } else {
-          setNewSearch('');
-          setNumberOfResults(0);
-          setResults([]);
-          setLoading(false);
-          toast.error('O campo de pesquisa está vazio');
-        }
-      }
-
-      search();
-      setSortValue('match');
-      setPage(1);
-      setFilterValue('');
-    },
-    [text],
-  );
-
-  const changeSort = useCallback(
-    (value: string) => {
-      const options: ISortableAttributes = {
-        match: { sort: '', order: 'desc' },
-        mostStars: { sort: 'stars', order: 'desc' },
-        fewestStars: { sort: 'stars', order: 'asc' },
-        mostForks: { sort: 'forks', order: 'desc' },
-        fewestForks: { sort: 'forks', order: 'asc' },
-        recentUpdate: { sort: 'updated', order: 'desc' },
-        lastRecentUpdate: { sort: 'updated', order: 'asc' },
-      };
-
-      const { sort } = options[value];
-      const { order } = options[value];
-
-      async function change() {
-        setLoading(true);
-        try {
-          const response = await searchRepositories({
-            q: `${newSearch} ${filterValue}`,
-            sort,
-            order,
-          });
-          setResults(response.data.items);
-          setPage(1);
-        } finally {
-          setLoading(false);
-        }
-      }
-
-      change();
-
-      setSortValue(value);
-      setSortSelected(sort);
-      setOrderSelected(order);
-    },
-    [newSearch, filterValue],
-  );
-
-  const changeFilter = useCallback(
-    (value: string) => {
-      async function filterResults() {
-        setLoading(true);
-        try {
-          const response = await searchRepositories({
-            q: `${newSearch} ${value}`,
-            sort: sortSelected,
-            order: orderSelected,
-          });
-          setResults(response.data.items);
-          setNumberOfResults(response.data.total_count);
-          setPage(1);
-        } finally {
-          setLoading(false);
-        }
-      }
-
-      filterResults();
-      setFilterValue(value);
-    },
-    [newSearch, sortSelected, orderSelected],
-  );
-
-  useEffect(() => {
-    const maxButtons = 5;
-    const maxPage =
-      Math.ceil(numberOfResults / 10) < 100
-        ? Math.ceil(numberOfResults / 10)
-        : 100;
-
-    let maxLeft = page - Math.floor(maxButtons / 2);
-    let maxRight = page + Math.floor(maxButtons / 2);
-
-    if (maxLeft < 1) {
-      maxLeft = 1;
-      maxRight = maxButtons;
-    }
-
-    if (maxRight > maxPage) {
-      maxRight = maxPage;
-      maxLeft = maxPage - (maxButtons - 1) > 1 ? maxPage - (maxButtons - 1) : 1;
-    }
-
-    const listOfButtons = [];
-
-    for (let item = maxLeft; item <= maxRight; item++) {
-      listOfButtons.push(item);
-    }
-
-    setLastPage(maxPage);
-    setPagingControl(listOfButtons);
-  }, [page, numberOfResults]);
-
-  const changePage = useCallback(
-    (item: number) => {
-      async function goToPage(toPage: number) {
-        setLoading(true);
-        try {
-          const response = await searchRepositories({
-            q: `${newSearch} ${filterValue}`,
-            sort: sortSelected,
-            order: orderSelected,
-            page: +toPage,
-          });
-          setResults(response.data.items);
-          setPage(item);
-        } finally {
-          setLoading(false);
-        }
-      }
-      goToPage(item);
-    },
-    [newSearch, sortSelected, orderSelected, filterValue],
-  );
-
   return (
     <Container>
-      <Header
-        text={text}
-        searchRepo={searchRepo}
-        setText={setText}
-        toggleSearch={toggleSearch}
-        setToggleSearch={setToggleSearch}
-      />
+      <Header />
 
       <Content>
         {newSearch === '' ? (
@@ -228,22 +41,12 @@ const Main: React.FC = () => {
                   <NoResults />
                 ) : (
                   <>
-                    <DescriptionOfResults
-                      numberOfResults={numberOfResults}
-                      newSearch={newSearch}
-                      sortValue={sortValue}
-                      changeSort={changeSort}
-                      changeFilter={changeFilter}
-                      filterValue={filterValue}
-                    />
-                    <RepoArea results={results} />
+                    <DescriptionOfResults />
+                    {results.map((repo) => (
+                      <RepoArea repo={repo} />
+                    ))}
 
-                    <PagingArea
-                      changePage={changePage}
-                      page={page}
-                      pagingControl={pagingControl}
-                      lastPage={lastPage}
-                    />
+                    <PagingArea />
                   </>
                 )}
               </>

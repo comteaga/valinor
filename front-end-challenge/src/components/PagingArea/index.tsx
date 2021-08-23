@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect, useCallback, useState, useContext } from 'react';
 import {
   FaAngleDoubleLeft,
   FaAngleDoubleRight,
@@ -6,20 +6,76 @@ import {
   FaChevronRight,
 } from 'react-icons/fa';
 import { Container } from './styles';
+import AppContext from '../../contexts/appContext';
+import { searchRepositories } from '../../services/api-service';
 
-interface IProps {
-  changePage(value: number): void;
-  page: number;
-  pagingControl: number[];
-  lastPage: number;
-}
+const PagingArea: React.FC = () => {
+  const {
+    numberOfResults,
+    page,
+    setLoading,
+    newSearch,
+    filterValue,
+    sortSelected,
+    orderSelected,
+    setResults,
+    setPage,
+  } = useContext(AppContext);
 
-const PagingArea: React.FC<IProps> = ({
-  changePage,
-  page,
-  pagingControl,
-  lastPage,
-}) => {
+  const [lastPage, setLastPage] = useState<number>(1);
+  const [pagingControl, setPagingControl] = useState<number[]>([]);
+
+  useEffect(() => {
+    const maxButtons = 5;
+    const maxPage =
+      Math.ceil(numberOfResults / 10) < 100
+        ? Math.ceil(numberOfResults / 10)
+        : 100;
+
+    let maxLeft = page - Math.floor(maxButtons / 2);
+    let maxRight = page + Math.floor(maxButtons / 2);
+
+    if (maxLeft < 1) {
+      maxLeft = 1;
+      maxRight = maxButtons;
+    }
+
+    if (maxRight > maxPage) {
+      maxRight = maxPage;
+      maxLeft = maxPage - (maxButtons - 1) > 1 ? maxPage - (maxButtons - 1) : 1;
+    }
+
+    const listOfButtons = [];
+
+    for (let item = maxLeft; item <= maxRight; item++) {
+      listOfButtons.push(item);
+    }
+
+    setLastPage(maxPage);
+    setPagingControl(listOfButtons);
+  }, [page, numberOfResults]);
+
+  const changePage = useCallback(
+    (item: number) => {
+      async function goToPage(toPage: number) {
+        setLoading(true);
+        try {
+          const response = await searchRepositories({
+            q: `${newSearch} ${filterValue}`,
+            sort: sortSelected,
+            order: orderSelected,
+            page: +toPage,
+          });
+          setResults(response.data.items);
+          setPage(item);
+        } finally {
+          setLoading(false);
+        }
+      }
+      goToPage(item);
+    },
+    [newSearch, sortSelected, orderSelected, filterValue],
+  );
   return (
     <Container>
       <button
