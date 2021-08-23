@@ -1,20 +1,32 @@
+import { FaFilter } from 'react-icons/fa';
+import { GrSort } from 'react-icons/gr';
+import { useState } from 'react';
 import { Container } from './styles';
+import { Select } from '../Select';
 
 interface IProps {
   numberOfResults: number;
   newSearch: string;
   sortValue: string;
+  filterValue: string;
   changeSort?(value: string): void;
+  changeFilter?(value: string): void;
 }
 
 const sortOptions = [
-  { option: 'match', label: 'Melhor match' },
-  { option: 'mostStars', label: 'Mais estrelas' },
-  { option: 'fewestStars', label: 'Menos estrelas' },
-  { option: 'mostForks', label: 'Mais forks' },
-  { option: 'fewestForks', label: 'Menos forks' },
-  { option: 'recentUpdate', label: 'Atualizado recentemente' },
-  { option: 'lastRecentUpdate', label: 'Atualizado a mais tempo' },
+  { value: 'match', label: 'Melhor match' },
+  { value: 'mostStars', label: 'Mais estrelas' },
+  { value: 'fewestStars', label: 'Menos estrelas' },
+  { value: 'mostForks', label: 'Mais forks' },
+  { value: 'fewestForks', label: 'Menos forks' },
+  { value: 'recentUpdate', label: 'Atualizado recentemente' },
+  { value: 'lastRecentUpdate', label: 'Atualizado a mais tempo' },
+];
+
+const filterOptions = [
+  { value: '', label: 'Omitir forks' },
+  { value: 'fork:true', label: 'Todos' },
+  { value: 'fork:only', label: 'Apenas forks' },
 ];
 
 const DescriptionOfResults: React.FC<IProps> = ({
@@ -22,23 +34,31 @@ const DescriptionOfResults: React.FC<IProps> = ({
   newSearch,
   sortValue,
   changeSort,
+  filterValue,
+  changeFilter,
 }) => {
   return (
     <Container>
       <h1>
         {numberOfResults.toLocaleString('pt-br')} resultados para : {newSearch}
       </h1>
-      <select
-        name="sortSelected"
-        value={sortValue}
-        onChange={(e) => changeSort && changeSort(e.target.value)}
-      >
-        {sortOptions.map((item) => (
-          <option key={item.option} value={item.option}>
-            {item.label}
-          </option>
-        ))}
-      </select>
+      <div className="selectArea">
+        <Select
+          options={sortOptions}
+          icon={<GrSort size={14} color="#555" />}
+          actualValue={sortValue}
+          changeValue={changeSort}
+          className="select"
+        />
+
+        <Select
+          options={filterOptions}
+          icon={<FaFilter size={14} color="#555" />}
+          actualValue={filterValue}
+          changeValue={changeFilter}
+          className="select"
+        />
+      </div>
     </Container>
   );
 };

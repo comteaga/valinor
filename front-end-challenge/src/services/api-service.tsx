@@ -1,23 +1,24 @@
+/* eslint-disable camelcase */
 import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'https://api.github.com/',
 });
-interface GithubSearchItemsResponse {
+interface IGithubSearchItemsResponse {
   id: number;
   name: string;
   full_name: string;
   description: string;
   fork: string;
+  size: number;
   url: string;
   html_url: string;
   created_at: string;
   updated_at: string;
-  watchers_count: number;
+  stargazers_count: number;
   language: string;
   forks: number;
   open_issues: number;
-  watchers: number;
   license: {
     spdx_id: string;
   };
@@ -26,12 +27,12 @@ interface GithubSearchItemsResponse {
   };
 }
 
-interface GithubSearchResponse {
+interface IGithubSearchResponse {
   total_count: number;
-  items: GithubSearchItemsResponse[];
+  items: IGithubSearchItemsResponse[];
 }
 
-interface GithubSearchRequest {
+interface IGithubSearchRequest {
   q: string;
   sort?: string;
   order?: string;
@@ -39,8 +40,8 @@ interface GithubSearchRequest {
   page?: number;
 }
 
-const searchRepositories = (data: GithubSearchRequest) => {
-  return api.get<GithubSearchResponse>(`/search/repositories`, {
+const searchRepositories = (data: IGithubSearchRequest) => {
+  return api.get<IGithubSearchResponse>(`/search/repositories`, {
     params: {
       q: data.q,
       sort: data.sort || '',
@@ -51,4 +52,4 @@ const searchRepositories = (data: GithubSearchRequest) => {
   });
 };
 export { searchRepositories };
-export type { GithubSearchResponse, GithubSearchItemsResponse };
+export type { IGithubSearchResponse, IGithubSearchItemsResponse };

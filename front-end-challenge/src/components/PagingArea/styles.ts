@@ -5,6 +5,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   margin: 20px 0;
+  max-width: 100%;
 
   button {
     padding: 10px 15px;
@@ -20,13 +21,6 @@ const Container = styled.div`
     align-items: center;
     justify-content: center;
 
-    @media screen and (max-width: 700px) {
-      font-size: 22px;
-      span {
-        font-size: 0;
-      }
-    }
-
     svg {
       margin: 0 3px;
     }
@@ -39,6 +33,7 @@ const Container = styled.div`
 
   button:disabled,
   button[disabled] {
+    cursor: not-allowed;
     background-color: #eee;
     color: #ccc;
   }
@@ -49,6 +44,16 @@ const Container = styled.div`
     padding: 10px 15px;
     font-weight: bold;
     border-radius: 4px;
+  }
+
+  @media screen and (max-width: 1200px) {
+    span {
+      font-size: 0;
+    }
+
+    svg {
+      margin: 0;
+    }
   }
 `;
 

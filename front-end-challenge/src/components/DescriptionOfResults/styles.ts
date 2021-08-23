@@ -1,21 +1,46 @@
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 
 const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  color: #444;
 
-  select {
-    padding: 4px;
-    border-radius: 4px;
-    background-color: #eee;
-    border-color: #ddd;
+  h1 {
+    font-size: 20px;
   }
 
-  option {
-    border: none;
-    background-color: #eee;
-    color: #25292e;
+  .selectArea {
+    display: flex;
+    align-items: center;
+
+    .select:last-child {
+      margin-left: 8px;
+    }
+  }
+
+  @media screen and (max-width: 1300px) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    h1 {
+      text-align: justify;
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+
+    .selectArea {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      .select:last-child {
+        margin-left: 0;
+        margin-top: 6px;
+      }
+    }
   }
 `;
 

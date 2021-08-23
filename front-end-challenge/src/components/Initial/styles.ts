@@ -6,8 +6,9 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border-radius: 10px;
   margin: auto;
+  margin-top: 5vh;
+  margin-bottom: 5vh;
   padding: 50px;
   width: 80%;
   min-height: 70vh;
@@ -17,7 +18,7 @@ const Container = styled.div`
     margin-bottom: 30px;
   }
 
-  @media screen and (max-width: 700px) {
+  @media screen and (max-width: 800px) {
     padding: 20px;
     h1 {
       font-size: 28px;

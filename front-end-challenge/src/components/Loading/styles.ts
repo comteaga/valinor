@@ -17,6 +17,11 @@ const Container = styled.div`
   align-items: center;
   margin: auto;
   padding: 200px;
+  height: 80vh;
+
+  h1 {
+    font-size: 22px;
+  }
 
   svg {
     margin-right: 10px;

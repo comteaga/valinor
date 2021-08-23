@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 const Container = styled.div`
-  background-color: #3b3e43;
+  background-color: #4f5359;
   position: relative;
   bottom: 0;
   display: flex;
@@ -20,7 +20,7 @@ const Container = styled.div`
 
   a {
     text-decoration: none;
-    color: #fff;
+    color: #eee;
     margin-top: 8px;
     display: flex;
     align-items: center;
@@ -33,7 +33,7 @@ const Container = styled.div`
 
   a:hover {
     text-decoration: underline;
-    color: #2b61d5;
+    color: #18234a;
   }
 `;
 

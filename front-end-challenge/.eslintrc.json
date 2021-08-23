@@ -11,7 +11,6 @@
     "prettier",
     "plugin:prettier/recommended",
     "plugin:import/errors",
-    "plugin:import/warnings",
     "plugin:import/typescript"
   ],
   "parserOptions": {
@@ -33,13 +32,16 @@
         "tsx": "never"
       }
     ],
-    "prettier/prettier": 1,
-    "react/jsx-uses-vars": "error",
-    "react/jsx-uses-react": "error",
+    "prettier/prettier": 0,
+    // "react/jsx-uses-vars": "error",
+    // "react/jsx-uses-react": "error",
     "no-unused-vars": 0,
+    "no-undef": 0,
     // suppress errors for missing 'import React' in files
     "react/react-in-jsx-scope": "off",
     // allow jsx syntax in js files (for next.js project)
+    "@typescript-eslint/no-use-before-define": "off",
+    "no-use-before-define": "off",
     "react/jsx-filename-extension": [
       1,
       {
