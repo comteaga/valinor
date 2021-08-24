@@ -6,7 +6,6 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   margin: auto;
-  padding: 200px;
   height: 80vh;
 
   h1 {
