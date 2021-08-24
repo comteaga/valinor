@@ -82,20 +82,6 @@ const Container = styled.header`
   }
 
   @media screen and (max-width: 800px) {
-    height: 70px;
-    padding: 12px 20px;
-
-    .logo {
-      h1 {
-        font-size: 28px;
-      }
-
-      svg {
-        height: 40px;
-        width: 40px;
-      }
-    }
-
     .searchBox {
       width: fit-content;
       background-color: #00000000;
@@ -105,7 +91,6 @@ const Container = styled.header`
     .toggleSearch {
       display: block;
       background-color: #00000000;
-      padding: 12px;
       border-style: none;
       border-radius: 25px;
     }
@@ -187,6 +172,10 @@ const Container = styled.header`
         max-height: 40px;
       }
     }
+  }
+
+  @media screen and (max-width: 400px) {
+    padding: 12px;
   }
 `;
 

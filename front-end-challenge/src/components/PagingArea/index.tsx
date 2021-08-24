@@ -78,63 +78,76 @@ const PagingArea: React.FC = () => {
   );
   return (
     <Container>
-      <button
-        type="button"
-        disabled={page === 1}
-        onClick={() => {
-          changePage(1);
-        }}
-      >
-        <FaAngleDoubleLeft />
-        <span>Primeira página</span>
-      </button>
-      <button
-        type="button"
-        disabled={page < 2}
-        onClick={() => {
-          changePage(page - 1);
-        }}
-      >
-        <FaChevronLeft />
-        <span>Anterior</span>
-      </button>
+      <div id="fistSection">
+        <button
+          type="button"
+          className="jumpPageButton"
+          disabled={page === 1}
+          onClick={() => {
+            changePage(1);
+          }}
+        >
+          <FaAngleDoubleLeft />
+          <span>Primeira página</span>
+        </button>
+        <button
+          type="button"
+          className="jumpPageButton"
+          disabled={page < 2}
+          onClick={() => {
+            changePage(page - 1);
+          }}
+        >
+          <FaChevronLeft />
+          <span>Anterior</span>
+        </button>
+      </div>
 
-      {pagingControl.map((item) =>
-        item === page ? (
-          <button
-            key={item}
-            className="pageButtonSelected"
-            onClick={() => changePage(item)}
-          >
-            {item}
-          </button>
-        ) : (
-          <button key={item} onClick={() => changePage(item)}>
-            {item}
-          </button>
-        ),
-      )}
-
-      <button
-        type="button"
-        disabled={page === lastPage}
-        onClick={() => {
-          changePage(page + 1);
-        }}
-      >
-        <span>Próxima</span>
-        <FaChevronRight />
-      </button>
-      <button
-        type="button"
-        disabled={page === lastPage}
-        onClick={() => {
-          changePage(lastPage);
-        }}
-      >
-        <span>Última página</span>
-        <FaAngleDoubleRight />
-      </button>
+      <div id="secondSection">
+        {pagingControl.map((item) =>
+          item === page ? (
+            <button
+              key={item}
+              className="pageButtonSelected"
+              onClick={() => changePage(item)}
+            >
+              {item}
+            </button>
+          ) : (
+            <button
+              key={item}
+              className="pageButton"
+              onClick={() => changePage(item)}
+            >
+              {item}
+            </button>
+          ),
+        )}
+      </div>
+      <div id="thirdSection">
+        <button
+          type="button"
+          className="jumpPageButton"
+          disabled={page === lastPage}
+          onClick={() => {
+            changePage(page + 1);
+          }}
+        >
+          <span>Próxima</span>
+          <FaChevronRight />
+        </button>
+        <button
+          type="button"
+          className="jumpPageButton"
+          disabled={page === lastPage}
+          onClick={() => {
+            changePage(lastPage);
+          }}
+        >
+          <span>Última página</span>
+          <FaAngleDoubleRight />
+        </button>
+      </div>
     </Container>
   );
 };

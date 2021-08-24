@@ -8,7 +8,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  padding: 20px;
+  padding: 20px 8px;
   width: 100%;
   z-index: 90;
 
@@ -34,6 +34,15 @@ const Container = styled.div`
   a:hover {
     text-decoration: underline;
     color: #18234a;
+  }
+
+  @media screen and (max-width: 440px) {
+    p {
+      font-size: 12px;
+    }
+    a {
+      font-size: 12px;
+    }
   }
 `;
 

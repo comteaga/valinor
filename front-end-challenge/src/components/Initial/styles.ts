@@ -9,21 +9,17 @@ const Container = styled.div`
   margin: auto;
   margin-top: 5vh;
   margin-bottom: 5vh;
-  padding: 50px;
-  width: 80%;
+  padding: 14px;
+  width: 100%;
   min-height: 60vh;
 
   h1 {
-    font-size: 36px;
-    margin-bottom: 30px;
+    font-size: min(36px, 7vw);
+    margin-bottom: 25px;
   }
 
-  @media screen and (max-width: 800px) {
-    padding: 20px;
-    h1 {
-      font-size: 28px;
-      margin-bottom: 30px;
-    }
+  svg {
+    width: min(180px, 40vw);
   }
 `;
 

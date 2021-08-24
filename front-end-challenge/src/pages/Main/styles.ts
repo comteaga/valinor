@@ -27,7 +27,6 @@ const Content = styled.div`
   }
 
   @media screen and (max-width: 800px) {
-    padding: 100px 20px 0px 20px;
     width: 100%;
     min-width: unset;
   }

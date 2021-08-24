@@ -4,15 +4,28 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: row;
   margin: 20px 0;
-  max-width: 100%;
+  width: 100%;
 
-  button {
-    padding: 10px 15px;
+  #fistSection,
+  #secondSection,
+  #thirdSection {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .jumpPageButton,
+  .pageButton,
+  .pageButtonSelected {
+    padding: 8px;
+    min-height: 35px;
+    min-width: 35px;
     border-radius: 4px;
     border: none;
-    border-radius: 4px;
-    margin: 0 5px;
+    margin: 0 4px;
     font-weight: bold;
     transition: all 0.4s;
     background-color: #ddd;
@@ -25,8 +38,13 @@ const Container = styled.div`
       margin: 0 3px;
     }
   }
+  .pageButtonSelected {
+    background-color: #25292e;
+    color: #eee;
+  }
 
-  button:hover {
+  .jumpPageButton:hover,
+  .pageButton:hover {
     background-color: #25292e;
     color: #eee;
   }
@@ -38,21 +56,40 @@ const Container = styled.div`
     color: #ccc;
   }
 
-  .pageButtonSelected {
-    background-color: #25292e;
-    color: #eee;
-    padding: 10px 15px;
-    font-weight: bold;
-    border-radius: 4px;
+  @media screen and (max-width: 1200px) {
+    .jumpPageButton {
+      span {
+        font-size: 0;
+      }
+
+      svg {
+        margin: 0;
+      }
+    }
+    .pageButton {
+    }
   }
 
-  @media screen and (max-width: 1200px) {
-    span {
-      font-size: 0;
+  @media screen and (max-width: 480px) {
+    .jumpPageButton,
+    .pageButton,
+    .pageButtonSelected {
+      border-radius: 0;
+      margin: 0;
+      min-height: 30px;
+      min-width: 30px;
+      padding: 4px;
     }
 
-    svg {
-      margin: 0;
+    #fistSection {
+      button:first-child {
+        border-radius: 4px 0 0 4px;
+      }
+    }
+    #thirdSection {
+      button:last-child {
+        border-radius: 0 4px 4px 0;
+      }
     }
   }
 `;

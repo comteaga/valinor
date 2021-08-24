@@ -131,6 +131,11 @@ const Container = styled.div`
     justify-content: center;
     align-items: center;
 
+    :hover {
+      transform: scale(1.01);
+      box-shadow: 4px 4px 12px 0 rgba(0, 0, 0, 0.3);
+    }
+
     img {
       max-height: 120px;
       max-width: 120px;
@@ -157,6 +162,7 @@ const Container = styled.div`
       justify-content: center;
       align-items: stretch;
       font-size: 16px;
+      border: 1px solid #ddd;
     }
 
     .detailsNumbers {
@@ -193,11 +199,15 @@ const Container = styled.div`
     }
   }
 
-  @media screen and (max-width: 440px) {
+  @media screen and (max-width: 420px) {
+    width: 100%;
     .detailsNumbers,
     .detailsType,
     .detailsDates {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
 
       > a {
         justify-content: left;

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useContext, useCallback } from 'react';
 import { FaArrowLeft, FaGithub, FaSearch } from 'react-icons/fa';
-import { toast } from 'react-toastify';
 import { Container } from './styles';
 import AppContext from '../../contexts/appContext';
 import { searchRepositories } from '../../services/api-service';
@@ -49,7 +48,6 @@ const Header: React.FC = () => {
           setNumberOfResults(0);
           setResults([]);
           setLoading(false);
-          toast.error('O campo de pesquisa está vazio');
         }
       }
 
@@ -76,7 +74,7 @@ const Header: React.FC = () => {
           className={toggleSearch === false ? 'toggleSearch' : 'toggleSearchOn'}
           onClick={() => setToggleSearch(!toggleSearch)}
         >
-          <FaSearch size={30} color="#ddd" />
+          <FaSearch size={25} color="#ddd" />
         </button>
         <button
           type="button"

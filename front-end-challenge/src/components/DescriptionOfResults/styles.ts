@@ -26,7 +26,7 @@ const Container = styled.div`
 
     h1 {
       text-align: justify;
-      font-size: 20px;
+      font-size: 16px;
       margin-bottom: 12px;
     }
 
