@@ -19,17 +19,19 @@ O projeto encontra-se em desenvolvimento seguindo o seguinte fluxo:
 - [x] Aperfeiçoamento do layout responsivo
 - [ ] Testes
 
+---
+
 ## ☕ Usando o Buscador de repositórios
 
 Exemplo de utilização da aplicação desktop:
 
-<p>
+<p  align="center">
   <img src="src/assets/desktop.gif" width="800px" />
 </p>
 
 Exemplo de utilização mobile:
 
-<p>
+<p  align="center">
   <img src="src/assets/mobile.gif" height="500px" />
 </p>
 
