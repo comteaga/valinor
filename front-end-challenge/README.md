@@ -21,7 +21,7 @@ O projeto encontra-se em desenvolvimento seguindo o seguinte fluxo:
 
 ---
 
-## ☕ Usando o Buscador de repositórios
+## Usando o Buscador de repositórios
 
 Exemplo de utilização da aplicação desktop:
 
@@ -38,3 +38,7 @@ Exemplo de utilização mobile:
 Para cada repositório listado é exibido o nome do proprietário/nome do repositório, a descrição, número de estrelas, forks e issues abertas (todos com os respectivos links no Github).
 
 A aplicação também exibe o tamanho do repositório (KB ou MB), a linguagem mais usada no projeto, o tipo de licença, a data de criação e a data da última atualização.
+
+## Confira o projeto
+
+O projeto está disponível online aqui: [link do projeto](https://friendly-colden-b62d39.netlify.app/)
