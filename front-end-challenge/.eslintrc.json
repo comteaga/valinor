@@ -56,7 +56,8 @@
     "react/jsx-props-no-spreading": 0,
     "import/prefer-default-export": 0,
     "no-plusplus": 0,
-    "dot-notation": 0
+    "dot-notation": 0,
+    "import/no-extraneous-dependencies": 0
   },
   "settings": {
     "import/resolver": {
